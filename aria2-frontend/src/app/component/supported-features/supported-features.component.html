@@ -1,0 +1,15 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true" (click)="closeDialog()" matTooltip="Close" matTooltipPosition="right">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<h1 mat-dialog-title>Supported features</h1>
+<div mat-dialog-content>
+  <mat-label><b>Aria2 version</b>: {{supportedFeatures.version}}</mat-label>
+  <br/><br/>
+  <mat-label><b>Supported features</b>:</mat-label>
+  <ul>
+    <li *ngFor="let feature of supportedFeatures.enabledFeatures">{{feature}}</li>
+  </ul>
+</div>
+<div mat-dialog-actions align="center">
+  <button mat-raised-button color="primary" (click)="closeDialog()">Ok</button>
+</div>

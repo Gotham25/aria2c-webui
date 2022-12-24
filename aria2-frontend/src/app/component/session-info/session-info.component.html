@@ -1,0 +1,10 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true" (click)="closeDialog()" matTooltip="Close" matTooltipPosition="right">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<h1 mat-dialog-title>Session info</h1>
+<div mat-dialog-content>
+  <mat-label><b>Session id</b>: {{sessionId}}</mat-label>
+</div>
+<div mat-dialog-actions align="center">
+  <button mat-raised-button color="primary" (click)="closeDialog()">Ok</button>
+</div>

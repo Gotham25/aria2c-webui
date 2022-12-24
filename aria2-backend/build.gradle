@@ -1,0 +1,76 @@
+import groovy.json.JsonSlurper
+import org.apache.tools.ant.taskdefs.condition.Os
+
+tasks.register("setupProjectDependencies") {
+    description = "Sets up the aria2-backend project dependencies"
+
+    println "Setting up dependencies for aria2-backend..."
+
+    file("./node_modules").deleteDir()
+    file("./package-lock.json").delete()
+    file("./aria2c.exe").delete()
+    file("./cacert.pem").delete()
+
+    def json = new JsonSlurper().parseText(new URL("https://api.github.com/repos/q3aql/aria2-static-builds/releases/latest").text)
+    def version = json.tag_name.substring(1)
+    def linuxBuildName = "aria2-${version}-linux-gnu-64bit-build1"
+    def windowsBuildName = "aria2-${version}-win-32bit-build1"
+    println "Fetching aria2 static build. Latest version: ${version}"
+    def aria2StaticBaseURL = "https://github.com/q3aql/aria2-static-builds/releases/download/v${version}"
+    def aria2StaticLinuxBuildURL = "${aria2StaticBaseURL}/${linuxBuildName}.tar.bz2"
+    def aria2StaticWindowsBuildURL = "${aria2StaticBaseURL}/${windowsBuildName}.7z"
+    def outputFile, aria2StaticBuildURL, extractCmd="", cmdExecutor, cmdOptions=""
+
+    if(Os.isFamily(Os.FAMILY_WINDOWS)) {
+        outputFile = file("./${windowsBuildName}.7z")
+        aria2StaticBuildURL = aria2StaticWindowsBuildURL
+        extractCmd = "7za e ${windowsBuildName}.7z ${windowsBuildName}/aria2c.exe ${windowsBuildName}/ca-certificates.crt"
+        cmdExecutor = "cmd.exe"
+        cmdOptions = "/c"
+    } else if(Os.isFamily(Os.FAMILY_UNIX)) {
+        outputFile = file("./${linuxBuildName}.tar.bz2")
+        aria2StaticBuildURL = aria2StaticLinuxBuildURL
+        extractCmd = "tar --strip-components=1 -xvjf ${linuxBuildName}.tar.bz2 ${linuxBuildName}/aria2c ${linuxBuildName}/ca-certificates.crt"
+        cmdExecutor = "/bin/bash"
+        cmdOptions = "-c"
+    } else {
+        throw new GradleException("Only ${Os.FAMILY_WINDOWS} and ${Os.FAMILY_UNIX} platforms are supported. Detected platform, ${}")
+    }
+
+    new URL(aria2StaticBuildURL).withInputStream{ i -> outputFile.withOutputStream{ it << i }}
+
+    println "Extracting archive..."
+    exec {
+        commandLine "${cmdExecutor}", "${cmdOptions}", "${extractCmd}"
+    }
+
+    println "Successfully extracted the archive"
+    println "Cleaning up the temporary files..."
+    outputFile.delete()
+    println "Successfully cleaned up temporary files"
+
+    println "Successfully completed setting up dependencies for aria2-backend"
+}
+
+tasks.register("build") {
+    description = "Builds the aria2-backend project"
+    println "Cleaning up previous build..."
+    file("./public").deleteDir()
+    file("./aria2.session").delete()
+    file("./aria2c.log").delete()
+    println "Successfully cleaned up previous build..."
+}
+
+tasks.register('startServer') {
+    def startCmd = "npm run start"
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine "cmd.exe", "/c", "${startCmd}"
+    } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+        commandLine "/bin/bash", "-c", "${startCmd}"
+    } else {
+        throw new GradleException("Only ${Os.FAMILY_WINDOWS} and ${Os.FAMILY_UNIX} platforms are supported. Detected platform, ${}")
+    }
+}
+
+npmInstall.dependsOn("setupProjectDependencies")
+npmInstall.mustRunAfter("setupProjectDependencies")

@@ -1,0 +1,10 @@
+.example-chip-list {
+  margin-left: 300px;
+  margin-top: 25px;
+  width: 800px;
+}
+
+// To remove the underline in form field
+::ng-deep .mat-form-field-underline {
+  display: none;
+}

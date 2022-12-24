@@ -1,0 +1,58 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button [matMenuTriggerFor]="menu" class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="addURLs()">Add URLs</button>
+    <button mat-menu-item (click)="sessionInfo()">Session info</button>
+    <button mat-menu-item (click)="supportedFeatures()">Supported features</button>
+  </mat-menu>
+  <span>Aria2 WebUI</span>
+  <span class="example-spacer"></span>
+  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>favorite</mat-icon>
+  </button>
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="systemInfoHolder" style="display: none">
+  <mat-card class="mat-elevation-z5">
+    <!--<mat-card-header>
+      <mat-card-title>System information</mat-card-title>
+    </mat-card-header>-->
+    <mat-card-content>
+
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div>
+  <div *ngIf="showFilterBox">
+    <div style="float: left">
+      <mat-icon [style.visibility]="!isFilterShown ? 'hidden': 'visible'"
+                [matBadge]="selectedStates == undefined ? 0 : selectedStates.length" matBadgeColor="accent"
+                matTooltip="Click to show table filter" (click)="isFilterShown=!isFilterShown">filter_list
+      </mat-icon>
+      <app-state-filter-chip-holder [hidden]="isFilterShown" (notifyStateChange)="stateChange($event)">
+      </app-state-filter-chip-holder>
+      <button [style.visibility]="isFilterShown ? 'hidden': 'visible'" mat-icon-button color="primary"
+              aria-label="Minimise filter" (click)="isFilterShown=!isFilterShown" matTooltip="Click to hide table filter">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+    </div>
+    <div>
+      <mat-icon [matTooltip]="getSystemInfoTooltip()" matTooltipPosition="right" matTooltipClass="linefeed-tooltip" (click)="navigateToSystemInfo()">info</mat-icon>
+    </div>
+  </div>
+  <br />
+  <div>
+    <!--<app-row-item></app-row-item>-->
+
+    <ng-container *ngFor="let dStat of tableDataSource$; trackBy: dStatByGID">
+      <app-row-item [dStats]="dStat"></app-row-item>
+    </ng-container>
+
+  </div>
+</div>

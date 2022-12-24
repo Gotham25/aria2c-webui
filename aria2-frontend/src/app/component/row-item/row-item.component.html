@@ -1,0 +1,119 @@
+<div class="rowItemStyle">
+  <div fxLayout="row" style="margin-left: 10px; height: 25px">
+    <!--<h3><b>{{getFileName() || 'Unknown_download_'+dStats.gid}}</b></h3>-->
+    <div class="downloadDetails">
+      <div id="temp1" style="width: 200px;">
+        <b>{{getFileName() | truncateText}}</b>
+      </div>
+      <div style="width: 100px">
+        <button *ngIf="isActionBtnShown('downloadFile')" (click)="downloadFile()" class="smallButton" elevateMaterial mat-raised-button color="primary">Download</button>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="downloadControls">
+      <button *ngIf="isActionBtnShown('removeDownloadResult')" mat-icon-button aria-label="Remove download result" matTooltip="Remove download result" matTooltipPosition="above" (click)="removeDownloadResult()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button *ngIf="isActionBtnShown('removeDownload')" mat-icon-button aria-label="Remove download" matTooltip="Remove download" matTooltipPosition="above" (click)="removeDownload()">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <button *ngIf="isActionBtnShown('forceRemoveDownload')" mat-icon-button aria-label="Force remove download" matTooltip="Force remove download" matTooltipPosition="above" (click)="forceRemoveDownload()">
+        <mat-icon>remove_circle</mat-icon>
+      </button>
+      <button *ngIf="isActionBtnShown('pauseDownload')" mat-icon-button aria-label="Pause download" matTooltip="Pause download" matTooltipPosition="above" (click)="pauseDownload()">
+        <mat-icon>pause</mat-icon>
+      </button>
+      <button *ngIf="isActionBtnShown('resumeDownload')" mat-icon-button aria-label="Unpause download" matTooltip="Resume download" matTooltipPosition="above" (click)="unPauseDownload()">
+        <mat-icon>play_circle_filled</mat-icon>
+      </button>
+      <button *ngIf="isActionBtnShown('forcePauseDownload')" mat-icon-button aria-label="Force pause download" matTooltip="Force pause download" matTooltipPosition="above" (click)="forcePauseDownload()">
+        <mat-icon>pause_circle_filled</mat-icon>
+      </button>
+      <button *ngIf="isActionBtnShown('downloadFile')" (click)="downloadFile()" mat-icon-button aria-label="Download file" matTooltip="Download file" matTooltipPosition="above">
+        <mat-icon>cloud_download</mat-icon>
+      </button>
+      <button *ngIf="isVideoFile()" mat-icon-button aria-label="Play downloaded file" matTooltip="Play downloaded file" matTooltipPosition="above" (click)="previewFile()">
+        <mat-icon>airplay</mat-icon>
+      </button>
+      <button mat-icon-button aria-label="Expand/Collapse row" [matTooltip]="'Click to '+(isExpanded ? 'collapse' : 'expand')" matTooltipPosition="above" (click)="toggleRowDisplay()">
+        <mat-icon>{{isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div style="float: left; margin-top: 5px">
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Id of the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>dehaze</mat-icon>
+      <span>Gid:   {{dStats.gid}}</span>
+    </button>
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Status of the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>{{getStatusIcon()}}</mat-icon>
+      <span>Status:   {{dStats.status}}</span>
+    </button>
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Total length of the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>storage</mat-icon>
+      <span>Total length:   {{ formatBytes(dStats.totalLength) }}</span>
+    </button>
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Completed length of the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>storage</mat-icon>
+      Completed length:   {{ formatBytes(dStats.completedLength) }}
+    </button>
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Download speed of the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>cloud_download</mat-icon>
+      <span><span>Download speed:   {{ formatBytes(dStats.downloadSpeed) }}/s</span></span>
+    </button>
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Estimated time of completion of the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>access_time</mat-icon>
+      <span>ETA:   {{ getEta() }}</span>
+    </button>
+    <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Number of connections to server for the aria2 download item" matTooltipShowDelay="700">
+      <mat-icon>link</mat-icon>
+      Connections:   {{ dStats.connections }}
+    </button>
+  </div>
+  <div style="margin-top: 40px">
+    <progress-bar [progress]="getProgress()" [color-degraded]="degradedProgressBarColors">
+    </progress-bar>
+  </div>
+  <div *ngIf="isExpanded" @animateDiv class="expandedRow">
+    <div>
+      <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="{{dStats.dir}}">
+        <mat-icon>folder</mat-icon>
+        <span>Directory:   {{ dStats.dir | truncateText: [35] }}</span>
+      </button>
+
+      <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="{{dStats.bitfield}}">
+        <mat-icon>developer_board</mat-icon>
+        <span>Bit field:   {{ dStats.bitfield | truncateText: [40] }}</span>
+      </button>
+
+      <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Number of pieces for the aria2 download item" matTooltipShowDelay="700">
+        # of <mat-icon>extension</mat-icon>
+        <span>Piece count:   {{dStats.numPieces}}</span>
+      </button>
+
+      <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Piece length of the aria2 download item" matTooltipShowDelay="700">
+        <mat-icon>extension</mat-icon>
+        <span>Piece length:   {{dStats.pieceLength}}</span>
+      </button>
+
+      <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Upload length of the aria2 download item" matTooltipShowDelay="700">
+        <mat-icon>cloud_upload</mat-icon>
+        <span>Upload length:   {{ formatBytes(dStats.uploadLength) }}</span>
+      </button>
+
+      <button mat-raised-button elevateMaterial class="smallButton" color="accent" matTooltip="Upload speed of the aria2 download item" matTooltipShowDelay="700">
+        <mat-icon>cloud_upload</mat-icon>
+        <span>Upload length:   {{ formatBytes(dStats.uploadSpeed) }}/s</span>
+      </button>
+
+      <form class="customFormClass">
+        <mat-form-field>
+          <input #downloadUrl readonly matInput type="text" [value]="dStats.downloadUrl">
+          <button #tp="matTooltip" [ngxClipboard]="downloadUrl" readonly mat-raised-button matPrefix elevateMaterial aria-label="search" color="primary" [matTooltip]="matTooltipText1" matTooltipPosition="above" (click)="copyToClipboard()">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+</div>

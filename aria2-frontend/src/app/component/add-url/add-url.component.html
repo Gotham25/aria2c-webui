@@ -1,0 +1,20 @@
+<button mat-icon-button class="close-button" [mat-dialog-close]="true" (click)="closeDialog()" matTooltip="Close" matTooltipPosition="right">
+  <mat-icon class="close-icon" color="warn">close</mat-icon>
+</button>
+<h1 mat-dialog-title>Add URL</h1>
+<div mat-dialog-content>
+  <mat-form-field appearance="fill">
+    <textarea class="addURL"
+              matInput
+              placeholder="Enter URLs here. One per line..."
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="10"
+              cdkAutosizeMaxRows="10"
+              [(ngModel)]="urls"
+    ></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="center">
+  <button mat-raised-button color="primary" (click)="closeDialog()">Close</button>&nbsp;&nbsp;&nbsp;
+  <button mat-raised-button color="primary" (click)="validateAndClose()">Add</button>
+</div>

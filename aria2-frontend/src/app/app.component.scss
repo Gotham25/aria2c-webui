@@ -1,0 +1,76 @@
+//@import './_colors';
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+/*.color-primary {
+  background-color: mat-color($primary) !important;
+}*/
+
+.systemInfoHolder {
+  margin-top: 5px;
+  text-align: -webkit-center;
+}
+
+.mat-card {
+  width: fit-content;
+}
+
+mat-card::ng-deep.mat-card-header-text {
+  width: 100%;
+}
+
+.mat-card-title {
+  text-align: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2%;
+}
+
+.flex-row > div {
+  border-radius: 30px;
+  background-color: aqua;
+}
+
+.memoryUsageInfo {
+  width: 400px;
+  height: 75px;
+  //border: 1px solid black;
+}
+
+.upTimeInfo {
+  width: 320px;
+  height: 75px;
+  //border: 1px solid black;
+}
+
+.hostInfo {
+  width: 700px;
+  height: 75px;
+  //border: 1px solid black;
+}
+
+.upTimeInfo > table {
+  text-align: center;
+}
+
+table {
+  margin-top: 10px;
+}
+
+caption {
+  margin-bottom: 5px;
+}
+
+
+.linefeed-tooltip {
+  white-space: pre-line;
+}
+// in component's stylesheet
+::ng-deep .linefeed-tooltip {
+  white-space: pre-line;
+}

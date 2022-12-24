@@ -1,0 +1,4 @@
+rootProject.name = 'gradle-nodejs-app'
+
+include 'aria2-frontend'
+include 'aria2-backend'

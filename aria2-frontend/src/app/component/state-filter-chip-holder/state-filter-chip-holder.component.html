@@ -1,0 +1,27 @@
+
+<mat-form-field class="example-chip-list" appearance="fill">
+  <mat-label>Download filter</mat-label>
+  <mat-chip-list #chipList aria-label="Fruit selection">
+    <mat-chip
+      *ngFor="let state of states"
+      [selectable]="selectable"
+      [removable]="removable"
+      (removed)="remove(state)"
+    >
+      {{state}}
+      <mat-icon matChipRemove *ngIf="removable" matTooltip="Remove filter">cancel</mat-icon>
+    </mat-chip>
+    <input
+      #stateInput
+      [formControl]="stateCtrl"
+      [matAutocomplete]="auto"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      (matChipInputTokenEnd)="add($event)">
+  </mat-chip-list>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+    <mat-option *ngFor="let state of filteredStates | async" [value]="state">
+      {{state}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

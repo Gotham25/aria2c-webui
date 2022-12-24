@@ -1,0 +1,62 @@
+.rowItemStyle {
+  border: 1px solid;
+  margin: 25px;
+}
+
+.mat-icon {
+  transform: scale(0.8);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.downloadControls {
+  float: left;
+}
+
+.expandedRow {
+  margin-left: 10px;
+}
+
+.downloadDetails {
+  float: left;
+  display: inline;
+  width: 80%;
+  margin-top: 3px;
+  height: 25px;
+}
+
+.downloadDetails div {
+  display: inline;
+}
+
+.smallButton {
+  margin-right: 1vw;
+  font-size: 10px;
+  line-height: 20px;
+  margin-left: 10px;
+}
+
+.mat-icon-button {
+  height: 20px;
+  line-height: 20px;
+}
+
+mat-form-field.mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field-prefix {
+  margin-right: 10px;
+}
+
+form {
+  margin-left: 10px;
+  margin-right: 30px;
+}
+
+mat-form-field.button {
+  width: 20px;
+  height: 20px;
+}

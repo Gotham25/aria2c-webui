@@ -1,0 +1,27 @@
+.mat-dialog-actions {
+  padding: 0 !important;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+.addURL {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.close-button {
+  float: right;
+  top: -24px;
+  right: -24px;
+  cursor: pointer;
+}
+
+.close-icon {
+  transition: 1s ease-in-out;
+}
+
+.close-icon:hover {
+  transform: rotate(180deg);
+}
