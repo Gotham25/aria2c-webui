@@ -5,9 +5,20 @@ const systemStats = require('./system_stats');
 const fs = require('fs');
 const path = require("path");
 const BASE_PATH = path.join(__dirname, "..");
+const EXTERNAL_DOWNLOAD_FOLDER = process.env.EXTERNAL_DOWNLOAD_FOLDER;
 const DOWNLOADS_FOLDER = path.join(BASE_PATH, "public", "downloads");
 const ARIA2C_PATH = path.join(BASE_PATH, "aria2c");
 const ARIA2C_CONFIG_PATH = path.join(BASE_PATH, "aria2.conf");
+
+function reCreateDirectory(directoryName) {
+  if(fs.existsSync(directoryName)) {
+    fs.rmdirSync(directoryName);
+  }
+
+  if(!fs.existsSync(directoryName)) {
+    fs.mkdirSync(directoryName);
+  }
+}
 
 let aria2cRPCSupportedMethods = [];
 let gids = [];
@@ -19,13 +30,29 @@ let globalConfig = [ "download-result", "keep-unfinished-download-result", "log"
                      "enable-http-pipelining", "optimize-concurrent-downloads", "save-cookies", "save-session", "split",
                      "check-integrity", "continue", "connect-timeout", "max-tries", "remote-time", "use-head" ];
 
-if(fs.existsSync(DOWNLOADS_FOLDER)) {
+if(EXTERNAL_DOWNLOAD_FOLDER !== undefined && EXTERNAL_DOWNLOAD_FOLDER.trim().length !== 0 && path.isAbsolute(EXTERNAL_DOWNLOAD_FOLDER)) {
+  // External downloads directory is set using
+  reCreateDirectory(EXTERNAL_DOWNLOAD_FOLDER);
+
+  // Remove downloads folder and create a symlink pointing to external downloads directory
+  fs.rmSync(DOWNLOADS_FOLDER, { recursive: true, force: true });
+  fs.symlink(EXTERNAL_DOWNLOAD_FOLDER, DOWNLOADS_FOLDER, function (err) {
+    console.log(err || `Created downloads folder symlink pointing to ${EXTERNAL_DOWNLOAD_FOLDER}`);
+  });
+  console.log(`Using external downloads folder, ${EXTERNAL_DOWNLOAD_FOLDER}`);
+} else {
+  // Using default download directory
+  reCreateDirectory(DOWNLOADS_FOLDER);
+  console.log(`Using default downloads folder, ${DOWNLOADS_FOLDER}`);
+}
+
+/*if(fs.existsSync(DOWNLOADS_FOLDER)) {
   fs.rmdirSync(DOWNLOADS_FOLDER);
 }
 
 if(!fs.existsSync(DOWNLOADS_FOLDER)) {
   fs.mkdirSync(DOWNLOADS_FOLDER);
-}
+}*/
 
 let spawn = require('child_process').spawn;
 let spawnAria2Process = spawn(ARIA2C_PATH, [`--conf-path=${ARIA2C_CONFIG_PATH}`], {
