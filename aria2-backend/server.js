@@ -12,8 +12,9 @@ const authMiddleware = require('./hash/auth_middleware');
 //const cyrb53 = require('./hash/cyrb53');
 const aria2cRouter = require('./route/aria2c_router');
 const PUBLIC_FOLDER_PATH = path.join(__dirname, 'public');
+const PORT = process.env.PORT || 3000;
 
-app.set("port", process.env.port || 3000);
+app.set("port", PORT);
 
 app.use(coreLogger.morganMiddleware);
 
@@ -91,6 +92,3 @@ nodeCleanup(function (exitCode, signal) {
         return false;
     }
 });
-
-
-
