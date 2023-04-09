@@ -1,0 +1,95 @@
+
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+  id "com.github.node-gradle.node" version "3.5.1"
+}
+
+node {
+  // Whether to download and install a specific Node.js version or not
+  // If false, it will use the globally installed Node.js
+  // If true, it will download node using above parameters
+  // Note that npm is bundled with Node.js
+  download = false
+
+  // Version of node to download and install (only used if download is true)
+  // It will be unpacked in the workDir
+  version = "16.20.0"
+
+  // Version of npm to use
+  // If specified, installs it in the npmWorkDir
+  // If empty, the plugin will use the npm command bundled with Node.js
+  npmVersion = "8.19.4"
+}
+
+npmInstall {
+    args = ['--force']
+}
+
+task downloadAria2Binary() {
+  def archType = System.properties['os.arch'], searchRegex = '', searchKeyword = '', aria2ArtifactName = ''
+  doLast {
+    if(file('./aria2c').exists()) {
+      println "aria2 binary already exists. Skipping artifact download..."
+    } else {
+      if(Os.isFamily(Os.FAMILY_WINDOWS)) {
+        if(archType.equals('amd64')) {
+          searchKeyword = 'x86_64-w64-mingw32_static'
+        } else if(archType.equals('i386')) {
+          searchKeyword = 'i686-w64-mingw32_static'
+        } else {
+          throw new GradleException('Arch type ' + archType + ' not supported for OS, ${Os.FAMILY_WINDOWS}')
+        }
+      } else if(Os.isFamily(Os.FAMILY_UNIX)) {
+        if(archType.contains('amd64') || archType.equals('i386')) {
+          searchKeyword = 'x86_64-linux-musl_static'
+        } else {
+          throw new GradleException('Arch type ${archType} not supported for OS, ${Os.FAMILY_UNIX}')
+        }
+      } else {
+        throw new GradleException('Only ${Os.FAMILY_WINDOWS} and ${Os.FAMILY_UNIX} platforms are supported. Detected platform, ${}')
+      }
+      searchRegex = '.*' + searchKeyword + '.*'
+      aria2ArtifactName = "aria2-" + searchKeyword + ".zip"
+      exec {
+        println 'Downloading latest aria2c release...'
+        commandLine "npx", "--yes", "download-github-release", "-s", searchRegex, "abcfy2", "aria2-static-build", "."
+      }
+      exec {
+        println 'Extracting aria2 release...'
+        commandLine "npx", "--yes", "decompress-cli", aria2ArtifactName, "--out-dir", "."
+      }
+      println 'Cleaning up downloaded artifact(s)...'
+      file('./' + aria2ArtifactName).delete()
+      println 'aria2 binary has been installed successfully'
+    }
+  }
+}
+
+task setupAria2cBackend() {
+  description = "Setup aria2-backend project"
+  dependsOn downloadAria2Binary
+  doLast {
+    println "Cleaning up previous build..."
+    file("./public").deleteDir()
+    file("./aria2.session").delete()
+    file("./aria2c.log").delete()
+    println "Successfully cleaned up previous build..."
+  }
+}
+
+task runAria2Backend(type: NpmTask) {
+  dependsOn npmInstall
+  args = ['run', 'start']
+  inputs.files('aria2c', 'aria2.conf', 'package.json', 'server.js', 'startAria2RPC.sh')
+  inputs.dir('core')
+  inputs.dir('hash')
+  inputs.dir('route')
+  inputs.dir('public')
+  inputs.dir(fileTree("node_modules").exclude(".cache"))
+}
+
+task build dependsOn setupAria2cBackend
+task start dependsOn runAria2Backend
+
