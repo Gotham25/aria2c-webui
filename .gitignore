@@ -13,25 +13,28 @@
 .gradle
 
 ##### Exclude backend project file #####
-aria2-backend/node_modules
-aria2-backend/package-lock.json
-aria2-backend/aria2c.log
-aria2-backend/aria2.session
-aria2-backend/aria2c.exe
-aria2-backend/aria2c
-aria2-backend/ca-certificates.crt
+backend/node_modules
+backend/public
+backend/public/downloads/*
+backend/package-lock.json
+backend/aria2c.log
+backend/aria2.session
+backend/aria2c.exe
+backend/aria2c
+backend/ca-certificates.crt
+backend/aria2-backend-app.log
 
 ##### Exclude frontend project file #####
-aria2-frontend/node_modules
-aria2-frontend/package-lock.json
-aria2-frontend/npm-debug.log
-aria2-frontend/.vscode/*
-!aria2-frontend/.vscode/settings.json
-!aria2-frontend/.vscode/tasks.json
-!aria2-frontend/.vscode/launch.json
-!aria2-frontend/.vscode/extensions.json
-aria2-frontend/.history/*
-aria2-frontend/.angular
+frontend/node_modules
+frontend/package-lock.json
+frontend/npm-debug.log
+frontend/.vscode/*
+!frontend/.vscode/settings.json
+!frontend/.vscode/tasks.json
+!frontend/.vscode/launch.json
+!frontend/.vscode/extensions.json
+frontend/.history/*
+frontend/.angular
 
 ##### Exclude Docker build files #####
 build
