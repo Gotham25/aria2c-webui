@@ -1,33 +1,14 @@
 
-
-plugins {
-  id "com.github.node-gradle.node" version "3.5.1"
+def ordered(String... dependencyPaths) {
+    def dependencies = dependencyPaths.collect { tasks.getByPath(it) }
+    for (int i = 0; i < dependencies.size() - 1; i++) {
+        dependencies[i + 1].mustRunAfter(dependencies[i])
+    }
+    return dependencies
 }
-
-node {
-  // Whether to download and install a specific Node.js version or not
-  // If false, it will use the globally installed Node.js
-  // If true, it will download node using above parameters
-  // Note that npm is bundled with Node.js
-  download = false
-
-  // Version of node to download and install (only used if download is true)
-  // It will be unpacked in the workDir
-  version = "16.20.0"
-
-  // Version of npm to use
-  // If specified, installs it in the npmWorkDir
-  // If empty, the plugin will use the npm command bundled with Node.js
-  npmVersion = "8.19.4"
-}
-
-npmInstall {
-    args = ['--force']
-}
-
 
 task buildApp(type: NpxTask) {
-  dependsOn npmInstall
+  dependsOn ordered('npmInstall', ':backend:setupAria2cBackend')
   command = 'ng'
   args = ['build']
   inputs.files('package.json', 'angular.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
@@ -36,8 +17,7 @@ task buildApp(type: NpxTask) {
   outputs.dir('dist')
 }
 
-task serveApp(type: NpxTask) {
-  dependsOn npmInstall
+task runAria2AppFrontend(type: NpxTask) {
   command = 'ng'
   args = ['serve']
   inputs.files('package.json', 'angular.json', 'angular.json', 'tsconfig.json', 'tsconfig.app.json')
@@ -45,7 +25,4 @@ task serveApp(type: NpxTask) {
   inputs.dir(fileTree("node_modules").exclude(".cache"))
   outputs.dir('dist')
 }
-
-task build dependsOn buildApp
-task start dependsOn serveApp
 

@@ -1,5 +1,5 @@
 {
-  "name": "aria2c-backend",
+  "name": "backend",
   "version": "1.0.0",
   "description": "Backend for aria2c-webui",
   "main": "server.js",

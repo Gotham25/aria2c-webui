@@ -8,3 +8,5 @@
  */
 
 rootProject.name = 'aria2c-webui'
+include 'frontend'
+include 'backend'
