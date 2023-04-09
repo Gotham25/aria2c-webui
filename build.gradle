@@ -1,10 +1,13 @@
 
-
 plugins {
   id "com.github.node-gradle.node" version "3.5.1"
+  id 'com.bmuschko.docker-remote-api' version '6.7.0'
 }
 
 apply plugin: 'com.github.node-gradle.node'
+
+// Import task types
+import com.bmuschko.gradle.docker.tasks.image.*
 
 subprojects {
   apply plugin: 'com.github.node-gradle.node'
@@ -30,10 +33,30 @@ subprojects {
 }
 
 task buildAria2App() {
+  description = "Builds Aria2 application"
   dependsOn(':frontend:buildApp')
 }
 
 task startAria2App() {
+  description = "Starts Aria2 application"
   dependsOn(':backend:runAria2Backend')
+}
+
+docker {
+  registryCredentials {
+    url = 'https://index.docker.io/v1/'
+    username = 'taray26748'
+    password = 'dckr_pat_1ie1uQ6merfX-8mLHJjaxpPPaHo'
+    email = 'taray26748@kuvasin.com'
+  }
+}
+
+task buildImage(type: DockerBuildImage) {
+  inputDir = file('./')
+  images.add('taray26748/gradle-nodejs-app:latest')
+}
+
+task publishToDockerHub(type: DockerPushImage, dependsOn: buildImage) {
+  images.add("taray26748/gradle-nodejs-app:latest")
 }
 

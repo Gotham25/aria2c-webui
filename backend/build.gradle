@@ -3,6 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 task downloadAria2Binary() {
   description = "Download and install aria2 command-line binary"
+  dependsOn npmInstall
   def archType = System.properties['os.arch'], searchRegex = '', searchKeyword = '', aria2ArtifactName = ''
   doLast {
     if(file('./aria2c').exists()) {
@@ -64,5 +65,4 @@ task runAria2Backend(type: NpmTask) {
   inputs.dir('public')
   inputs.dir(fileTree("node_modules").exclude(".cache"))
 }
-
 
