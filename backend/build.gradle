@@ -4,28 +4,30 @@ import org.apache.tools.ant.taskdefs.condition.Os
 task downloadAria2Binary() {
   description = "Download and install aria2 command-line binary"
   dependsOn npmInstall
-  def archType = System.properties['os.arch'], searchRegex = '', searchKeyword = '', aria2ArtifactName = ''
+  // def archType = System.properties['os.arch'], searchRegex = '', searchKeyword = '', aria2ArtifactName = ''
+  def archType = System.properties['os.arch'], aria2DownloadURL = ''
   doLast {
     if(file('./aria2c').exists()) {
       println "aria2 binary already exists. Skipping artifact download..."
     } else {
       if(Os.isFamily(Os.FAMILY_WINDOWS)) {
         if(archType.equals('amd64')) {
-          searchKeyword = 'x86_64-w64-mingw32_static'
+          aria2DownloadURL = 'https://github.com/abcfy2/aria2-static-build/releases/download/1.36.0/aria2-x86_64-w64-mingw32_static.zip'
         } else if(archType.equals('i386')) {
-          searchKeyword = 'i686-w64-mingw32_static'
+          aria2DownloadURL = 'https://github.com/abcfy2/aria2-static-build/releases/download/1.36.0/aria2-i686-w64-mingw32_static.zip'
         } else {
           throw new GradleException('Arch type ' + archType + ' not supported for OS, ${Os.FAMILY_WINDOWS}')
         }
       } else if(Os.isFamily(Os.FAMILY_UNIX)) {
         if(archType.contains('amd64') || archType.equals('i386')) {
-          searchKeyword = 'x86_64-linux-musl_static'
+          aria2DownloadURL = 'https://github.com/abcfy2/aria2-static-build/releases/download/1.36.0/aria2-x86_64-linux-musl_static.zip'
         } else {
           throw new GradleException('Arch type ${archType} not supported for OS, ${Os.FAMILY_UNIX}')
         }
       } else {
         throw new GradleException('Only ${Os.FAMILY_WINDOWS} and ${Os.FAMILY_UNIX} platforms are supported. Detected platform, ${}')
       }
+      /*
       searchRegex = '.*' + searchKeyword + '.*'
       aria2ArtifactName = "aria2-" + searchKeyword + ".zip"
       exec {
@@ -38,6 +40,19 @@ task downloadAria2Binary() {
       }
       println 'Cleaning up downloaded artifact(s)...'
       file('./' + aria2ArtifactName).delete()
+      */
+      exec {
+        println 'Downloading latest aria2c release...'
+        commandLine 'wget', aria2DownloadURL, '-O', 'aria2.zip'
+      }
+      exec {
+        println 'Extracting aria2 release...'
+        commandLine 'unzip', 'aria2.zip'
+      }
+      exec {
+        println 'Cleaning up downloaded artifact(s)...'
+        commandLine 'rm', '-rf', 'aria2.zip'
+      }
       println 'aria2 binary has been installed successfully'
     }
   }
