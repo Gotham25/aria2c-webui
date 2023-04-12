@@ -1,5 +1,5 @@
 FROM timbru31/java-node:8-jre AS builder
-RUN apt-get update -y && apt-get install -y bzip2 wget
+RUN apt-get update -y && apt-get install -y bzip2 wget zip
 WORKDIR /app
 COPY . .
 RUN ./gradlew buildAria2App
